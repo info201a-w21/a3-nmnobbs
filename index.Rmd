@@ -1,0 +1,65 @@
+---
+title: "**Assignment 3:** _Data Visualization (incarceration)_"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### **Introduction**
+
+This is the start of the introduction
+
+### **Summary**
+
+### **Trend over Time Chart:** _Line Chart_
+```{r, include=FALSE}
+library("stringr")
+urlfile = ("https://raw.githubusercontent.com/vera-institute/incarceration-trends/master/incarceration_trends.csv")
+incar <- read.csv(url(urlfile))
+
+library("ggplot2")
+library("dplyr")
+
+jail_pop <- incar %>%
+  group_by(year) %>%
+  filter(year == max(year)) %>%
+  filter(total_jail_pop == total_jail_pop) %>%
+  filter(latinx_jail_pop == latinx_jail_pop) %>%
+  filter(white_jail_pop == white_jail_pop) %>%
+  filter(aapi_jail_pop == aapi_jail_pop) %>%
+  filter(black_jail_pop == black_jail_pop) %>%
+  filter(native_jail_pop == native_jail_pop) %>%
+  summarize(jail_total = sum(total_jail_pop), latinx_total = sum(latinx_jail_pop),
+            white_total = sum(white_jail_pop), aapi_total = sum(aapi_jail_pop),
+            black_total = sum(black_jail_pop), native_total = sum(native_jail_pop))
+```
+```{r, echo=FALSE}
+ggplot(data = jail_pop) +
+  geom_line(mapping = aes(x = year, y = latinx_total, color = "black")) +
+  geom_line(mapping = aes(x = year, y = aapi_total, color = "chartreuse")) +
+  geom_line(mapping = aes(x = year, y = native_total, color = "peachpuff3")) +
+  geom_line(mapping = aes(x = year, y = black_total, color = "red")) +
+  geom_line(mapping = aes(x = year, y = white_total, color = "turquoise4")) +
+  scale_color_manual(name="Races:",
+                     values = c("black", "chartreuse", "peachpuff3", "red", "turquoise4"),
+                     labels = c("Latinx", "AAPI", "Native", "Black", "White")) +
+    scale_fill_manual(name="Races:",
+                      values = c("black", "chartreuse", "peachpuff3", "red", "turquoise4"),
+                      labels = c("Latinx", "AAPI", "Native", "Black", "White")) +
+  ggtitle("Yearly Total Jail Population for each Race") +
+  xlab("Year") +
+  ylab("Jail Population")
+```
+explain it !!
+
+### **Variable Comparison Chart:** _Scatterplot_
+
+```{r, include=FALSE}
+summary(jail_pop)
+```
+
+### **Map:** _State Map_
+
+
