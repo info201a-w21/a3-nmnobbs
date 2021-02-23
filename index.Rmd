@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
   For this assignment, the focus was on _analyzing data from the trends in incarceration dataset_ across the United States. There were many columns in the dataset that corresponded to an important number relating to the amount of incarceration across decades, for certain racial groups, and in certain states. There is information about different racial groups and their population amount in relation to jails and prisons. In this report, I decided to focus on the total jail population and how the amount differs between different racial groups because I wanted to see what patterns emerge and how the data would be distributed. I went more in-depth with the jail population by analyzing the occurrence and amount of **Latinx jail population across the United States**. 
 
- The first variable I chose to analyze was the total jail population in the most recent year: 2018. I wanted to figure out which state had the highest total jail population and using my `“dplyr”` skills the answer revealed to be California. The second variable I chose to analyze was the row with the highest total jail population. This variable would reveal the year that had the highest total jail population to give a sense of the incarceration amount in the past years. The third variable I chose to analyze involved the question of which state contained the highest total Latinx jail population in 2018. I wanted to see the most recent data in relation to the Latinx jail population which revealed to be the highest in California. My fourth variable used `“dplyr”` skills to calculate the total Latinx jail population in California. After the answer to the last question, I was curious as to how much the population incarcerated actually was. The last piece of summary information using `“dplyr”` skills analyzes the ratio between the Latinx population in Califonia and the Latinx jail population in California during the entirety of 2018. All these variables highlighted important parts of the original dataset that increased my overall knowledge about incarceration within the United States.
+The first variable I chose to analyze was the total jail population in the most recent year: 2018. I wanted to figure out which state had the highest total jail population and using my `“dplyr”` skills the answer revealed to be California. The second variable I chose to analyze was the row with the highest total jail population. This variable would reveal the year that had the highest total jail population to give a sense of the incarceration amount in the past years. The third variable I chose to analyze involved the question of which state contained the highest total Latinx jail population in 2018. I wanted to see the most recent data in relation to the Latinx jail population which revealed to be the highest in California. My fourth variable used `“dplyr”` skills to calculate the total Latinx jail population in California. After the answer to the last question, I was curious as to how much the population incarcerated actually was. The last piece of summary information using `“dplyr”` skills analyzes the ratio between the Latinx population in Califonia and the Latinx jail population in California during the entirety of 2018. All these variables highlighted important parts of the original dataset that increased my overall knowledge about incarceration within the United States.
 
 ### **Summary**
 ```{r, echo TRUE, eval=TRUE}
@@ -25,26 +25,27 @@ jail_highest_state <- incar %>%
 
 year_highest_jail <- incar %>%
   filter(total_jail_pop == max(total_jail_pop, na.rm = T)) %>%
-  pull(year) 
+  pull(year)
 
 high_state_latinx <- incar %>%
   filter(year == max(year, na.rm = T)) %>%
   filter(latinx_jail_pop == max(latinx_jail_pop, na.rm = T)) %>%
   pull(state, latinx_jail_pop)
 
-ca_latinx <- sum(ca_latinx_jail[, 'amount'])
+ca_latinx <- sum(ca_latinx_jail[, "amount"])
 
 latinx_ratio <- incar %>%
   group_by(state) %>%
   filter(year == max(year, na.rm = T)) %>%
   filter(latinx_jail_pop == latinx_jail_pop) %>%
   filter(total_pop == total_pop) %>%
-  mutate(total_pop/latinx_jail_pop) %>% 
-  summarize(latinx_jail = sum(latinx_jail_pop), total = sum(total_pop),
-            ratio = sum(latinx_jail_pop/total_pop)) %>% 
-  filter(state == "CA") %>% 
+  mutate(total_pop / latinx_jail_pop) %>%
+  summarize(
+    latinx_jail = sum(latinx_jail_pop), total = sum(total_pop),
+    ratio = sum(latinx_jail_pop / total_pop)
+  ) %>%
+  filter(state == "CA") %>%
   pull(ratio)
-
 ```
 
 ### **Trend over Time Chart:** _Line Chart_

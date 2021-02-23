@@ -1,11 +1,8 @@
 # Assignment 3
 # Load the data into a variable `incarceration`
 library("stringr")
-urlfile = ("https://raw.githubusercontent.com/vera-institute/incarceration-trends/master/incarceration_trends.csv")
+urlfile <- ("https://raw.githubusercontent.com/vera-institute/incarceration-trends/master/incarceration_trends.csv")
 incar <- read.csv(url(urlfile))
-
-library("ggplot2")
-library("dplyr")
 
 # Introduction + Summary ------------------------------------------------------
 
@@ -23,7 +20,7 @@ jail_highest_state <- incar %>%
 
 year_highest_jail <- incar %>%
   filter(total_jail_pop == max(total_jail_pop, na.rm = T)) %>%
-  pull(year) 
+  pull(year)
 
 # What state has the highest total Latinx jail population in the most recent
 # year? Store the state and number in the variable `high_state_latinx`
@@ -42,7 +39,7 @@ ca_latinx_jail <- incar %>%
   filter(latinx_jail_pop == latinx_jail_pop) %>%
   summarize(amount = sum(latinx_jail_pop))
 
-ca_latinx <- sum(ca_latinx_jail[, 'amount'])
+ca_latinx <- sum(ca_latinx_jail[, "amount"])
 
 # What is the ratio between the Latinx population in California and the Latinx
 # jail population in California in the most recent year of the dataset?
@@ -53,45 +50,55 @@ latinx_ratio <- incar %>%
   filter(year == max(year, na.rm = T)) %>%
   filter(latinx_jail_pop == latinx_jail_pop) %>%
   filter(total_pop == total_pop) %>%
-  mutate(total_pop/latinx_jail_pop) %>% 
-  summarize(latinx_jail = sum(latinx_jail_pop), total = sum(total_pop),
-            ratio = sum(latinx_jail_pop/total_pop)) %>% 
-  filter(state == "CA") %>% 
+  mutate(total_pop / latinx_jail_pop) %>%
+  summarize(
+    latinx_jail = sum(latinx_jail_pop), total = sum(total_pop),
+    ratio = sum(latinx_jail_pop / total_pop)
+  ) %>%
+  filter(state == "CA") %>%
   pull(ratio)
 
 # Map -------------------------------------------------------------------------
 
-library(usmap) 
+library(usmap)
 library(ggplot2)
 
 blank_theme <- theme_bw() +
   theme(
-    axis.line = element_blank(),        
-    axis.text = element_blank(),        
-    axis.ticks = element_blank(),       
-    axis.title = element_blank(),       
-    plot.background = element_blank(),  
-    panel.grid.major = element_blank(), 
-    panel.grid.minor = element_blank(), 
-    panel.border = element_blank()      
+    axis.line = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    axis.title = element_blank(),
+    plot.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_blank()
   )
 
-  latinx_state <- incar %>%
-    group_by(state) %>%
-    filter(year == max(year, na.rm = T)) %>%
-    filter(latinx_jail_pop == latinx_jail_pop) %>%
-    filter(total_pop == total_pop) %>%
-    mutate(total_pop/latinx_jail_pop) %>% 
-    summarize(pop = sum(latinx_jail_pop), total = max(total_pop), mutate = sum(total_pop/latinx_jail_pop))
-  
-map <- plot_usmap(data = latinx_state, values = "pop", color = "black", name = "Latinx Jail Population") +
+latinx_state <- incar %>%
+  group_by(state) %>%
+  filter(year == max(year, na.rm = T)) %>%
+  filter(latinx_jail_pop == latinx_jail_pop) %>%
+  filter(total_pop == total_pop) %>%
+  mutate(total_pop / latinx_jail_pop) %>%
+  summarize(
+    pop = sum(latinx_jail_pop), total = max(total_pop),
+    mutate = sum(total_pop / latinx_jail_pop)
+  )
+
+map <- plot_usmap(
+  data = latinx_state, values = "pop", color = "black",
+  name = "Latinx Jail Population"
+) +
   coord_fixed(1) +
   blank_theme +
-  scale_fill_gradientn(colours = rev(rainbow(7)),
-                       breaks = c(10, 100, 1000, 10000),
-                       trans = "log10", name = "Latinx Jail Population") +
-  labs(title = "The United States", subtitle = "Latinx Jail Population in 2018",
-       name = "Latinx Jail Population") +
+  scale_fill_gradientn(
+    colours = rev(rainbow(7)),
+    breaks = c(10, 100, 1000, 10000),
+    trans = "log10", name = "Latinx Jail Population"
+  ) +
+  labs(title = "The United States", subtitle = "Latinx Jail Population in
+       2018", name = "Latinx Jail Population") +
   theme(legend.position = "right")
 
 # Scatterplot Chart------------------------------------------------------------
@@ -101,18 +108,16 @@ regions <- incar %>%
   filter(state == "CA") %>%
   filter(latinx_jail_pop == latinx_jail_pop) %>%
   summarise(jail = sum(latinx_jail_pop))
-  
 
 scatter <- ggplot(regions, aes(x = year, y = jail)) +
   geom_point(aes(color = jail)) +
   scale_color_continuous("Latinx Jail Population") +
   labs(x = "Year", y = "Latinx Jail Population in California") +
   ggtitle("Latinx Jail Population In California Across Years")
-  
 
 # Line Chart: Trends over Time-------------------------------------------------
 
-options(scipen=999)
+options(scipen = 999)
 
 jail_pop <- incar %>%
   group_by(year) %>%
@@ -123,10 +128,12 @@ jail_pop <- incar %>%
   filter(aapi_jail_pop == aapi_jail_pop) %>%
   filter(black_jail_pop == black_jail_pop) %>%
   filter(native_jail_pop == native_jail_pop) %>%
-  summarize(jail_total = sum(total_jail_pop), total_pop_15_64 = sum(total_pop_15to64),
-            latinx_total = sum(latinx_jail_pop), white_total = sum(white_jail_pop),
-            aapi_total = sum(aapi_jail_pop), black_total = sum(black_jail_pop),
-            native_total = sum(native_jail_pop))
+  summarize(
+    jail_total = sum(total_jail_pop), total_pop_15_64 =
+      sum(total_pop_15to64), latinx_total = sum(latinx_jail_pop),
+    white_total = sum(white_jail_pop), aapi_total = sum(aapi_jail_pop),
+    black_total = sum(black_jail_pop), native_total = sum(native_jail_pop)
+  )
 
 line_chart <- ggplot(data = jail_pop) +
   geom_line(mapping = aes(x = year, y = latinx_total, color = "black")) +
@@ -134,11 +141,15 @@ line_chart <- ggplot(data = jail_pop) +
   geom_line(mapping = aes(x = year, y = native_total, color = "peachpuff3")) +
   geom_line(mapping = aes(x = year, y = black_total, color = "red")) +
   geom_line(mapping = aes(x = year, y = white_total, color = "turquoise4")) +
-  scale_color_manual(name="Races:",
-                     values = c("black", "chartreuse", "peachpuff3", "red", "turquoise4"),
-                     labels = c("Latinx", "AAPI", "Native", "Black", "White")) +
-    scale_fill_manual(name="Races:",
-                      values = c("black", "chartreuse", "peachpuff3", "red", "turquoise4"),
-                      labels = c("Latinx", "AAPI", "Native", "Black", "White")) +
+  scale_color_manual(
+    name = "Races:",
+    values = c("black", "chartreuse", "peachpuff3", "red", "turquoise4"),
+    labels = c("Latinx", "AAPI", "Native", "Black", "White")
+  ) +
+  scale_fill_manual(
+    name = "Races:",
+    values = c("black", "chartreuse", "peachpuff3", "red", "turquoise4"),
+    labels = c("Latinx", "AAPI", "Native", "Black", "White")
+  ) +
   ggtitle("Yearly Total Jail Population for each Race") +
   labs(x = "Year", y = "Jail Population")
