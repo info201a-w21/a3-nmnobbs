@@ -93,7 +93,7 @@ map <- plot_usmap(
   coord_fixed(1) +
   blank_theme +
   scale_fill_gradientn(
-    colours = rev(rainbow(7)),
+    colours = c("white", "brown"),
     breaks = c(10, 100, 1000, 10000),
     trans = "log10", name = "Latinx Jail Population"
   ) +
